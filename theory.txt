@@ -1,0 +1,8 @@
+git remote add origin https://github.com/YarramsettyBalaMuralikrishna/devTinder.git
+git branch -M main
+git push -u origin main
+
+// for this error I used this code
+remote: Permission to YarramsettyBalaMuralikrishna/devTinder.git denied to YBMK16. fatal: unable to access 'https://github.com/YarramsettyBalaMuralikrishna/devTinder.git/': The requested URL returned error: 403
+----> resolved code
+git config --global credential.useHttpPath true
