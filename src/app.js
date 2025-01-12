@@ -1,38 +1,27 @@
 const express = require('express');
-
 const app = express();
 
-app.post('/', (req, res) => {
-  res.send('helo user');
+const dataBase = require('./config/database');
+const User = require('./config/user');
+
+app.post('/signup', async (req, res) => {
+  const user = new User({
+    firstName: 'Bala Murali Krishna', // String is shorthand for {type: String}
+    lastName: 'Yarramsetty',
+    emailId: 'ybalamuralikrishna47@gmail.com',
+    password: 'ybmk1234',
+    age: '21',
+    gender: 'M',
+  });
+  await user.save();
+  res.send('user added successfully');
 });
 
-app.post('/user', (req, res) => {
-  res.send('user this is  user 1');
-});
-
-app.post('/user/pass', (req, res) => {
-  res.send('user pass 1');
-});
-
-app.delete('/user', (req, res) => {
-  res.send('user deleted successfully');
-  console.log('user deleted successfully');
-});
-
-app.get('/user/1', (req, res) => {
-  res.send('user details fetched successfully');
-  console.log('user details fetched successfully');
-});
-app.put('/user/1', (req, res) => {
-  res.send('user details updated successfuly');
-  console.log('user details updated successfuly');
-});
-
-app.patch('/user/1/name', (req, res) => {
-  res.send('user details patched successfuly');
-  console.log('user details patched successfuly');
-});
-
-app.listen(1618, () => {
-  console.log('server listening');
-});
+try {
+  dataBase.dataBase();
+  app.listen(1618, () => {
+    console.log('server listening');
+  });
+} catch (err) {
+  console.log(err);
+}
