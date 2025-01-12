@@ -13,8 +13,12 @@ app.post('/signup', async (req, res) => {
     age: '21',
     gender: 'M',
   });
-  await user.save();
-  res.send('user added successfully');
+  try {
+    await user.save();
+    res.send('user added successfully');
+  } catch (err) {
+    res.status(404).send(err);
+  }
 });
 
 try {
