@@ -28,7 +28,7 @@ function validate(firstName, lastName, emailId, password, age, gender, skills) {
 
   if (!emailId || typeof emailId !== 'string') throw new Error('Invalid email');
   if (!validator.isEmail(emailId)) {
-    console.log('hello email' + emailId);
+    // console.log('hello email' + emailId);
 
     throw new Error('invalid email');
   }
@@ -41,7 +41,7 @@ function validate(firstName, lastName, emailId, password, age, gender, skills) {
     throw new Error('invalid age');
   }
 
-  console.log(gender.toLowerCase());
+  //   console.log(gender.toLowerCase());
 
   if (
     gender.toLowerCase() !== 'male' &&
