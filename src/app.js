@@ -2,11 +2,13 @@ const express = require('express');
 const app = express();
 
 const dataBase = require('./config/database');
-const User = require('./config/user');
 const user = require('./config/user');
+
+const validate = require('./config/validator');
+
 app.use(express.json());
 
-app.post('/signup', async (req, res) => {
+app.post('/addUser', async (req, res) => {
   // const user = new User({
   //   firstName: 'Bala Murali Krishna', // String is shorthand for {type: String}
   //   lastName: 'Yarramsetty',
@@ -14,17 +16,38 @@ app.post('/signup', async (req, res) => {
   //   password: 'ybmk1234',
   //   age: '21',
   //   gender: 'M',
-  // });
+  // }); ---> hard coding way
 
-  const { firstName, lastName, emailId, password, age, gender } = req.body;
-  console.log('data fetched from api successfully');
-  const newUser = User({ firstName, lastName, emailId, password, age, gender });
+  // -> dynamic way
+
+  const { firstName, lastName, emailId, password, age, gender, skills } =
+    req.body;
+  // console.log('data fetched from api successfully');
+  // email validation
   try {
-    await newUser.save();
-    res.send('user added Successfully');
+    console.log('recieved users data');
+    validate(firstName, lastName, emailId, password, age, gender, skills);
+    console.log('user enterd correct details');
+    const newUser = user({
+      firstName,
+      lastName,
+      emailId,
+      password,
+      age,
+      gender,
+      skills,
+    });
+    try {
+      await newUser.save();
+      res.send('user added Successfully');
+    } catch (err) {
+      res.status(500).send('error savng to db');
+    }
   } catch (err) {
-    res.status(404).send(err);
+    console.log('validation error ' + err.message);
+    res.status(404).send(err.message);
   }
+  // skills
 });
 
 app.get('/allUsers', async (req, res) => {
@@ -32,8 +55,9 @@ app.get('/allUsers', async (req, res) => {
   res.send(allData);
 });
 
-app.patch('/patch', async (req, res) => {
+app.patch('/update', async (req, res) => {
   const idUser = req.body._id;
+  // const fileds make it dynamic
   const upd = await User.findByIdAndUpdate(idUser, { firstName: 'ybmkrishna' });
   res.send(' updated successfully to YBMK');
 });
