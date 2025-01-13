@@ -40,6 +40,10 @@ function validate(firstName, lastName, emailId, password, age, gender, skills) {
   if (!validator.isNumeric(age)) {
     throw new Error('invalid age');
   }
+  const curAge = parseInt(age, 10);
+  if (curAge < 18) {
+    throw new Error('invalid age');
+  }
 
   //   console.log(gender.toLowerCase());
 

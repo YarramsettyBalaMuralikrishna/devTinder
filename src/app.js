@@ -41,7 +41,7 @@ app.post('/addUser', async (req, res) => {
       await newUser.save();
       res.send('user added Successfully');
     } catch (err) {
-      res.status(500).send('error savng to db');
+      res.status(500).send('error savng to db' + err.message);
     }
   } catch (err) {
     console.log('validation error ' + err.message);
