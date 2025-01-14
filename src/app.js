@@ -3,36 +3,32 @@ const app = express();
 
 const dataBase = require('./config/database');
 const user = require('./config/user');
-
+const loginAuth = require('./config/loginApi');
 const validate = require('./config/validator');
+const profileRouter = require('./config/profile');
+const authFunc = require('./config/user');
+const bcrypt = require('bcrypt');
+
+const cookieParser = require('cookie-parser');
 
 app.use(express.json());
-
+app.use(cookieParser());
+//.....adding user
 app.post('/addUser', async (req, res) => {
-  // const user = new User({
-  //   firstName: 'Bala Murali Krishna', // String is shorthand for {type: String}
-  //   lastName: 'Yarramsetty',
-  //   emailId: 'ybalamuralikrishna47@gmail.com',
-  //   password: 'ybmk1234',
-  //   age: '21',
-  //   gender: 'M',
-  // }); ---> hard coding way
-
-  // -> dynamic way
-
   const { firstName, lastName, emailId, password, age, gender, skills } =
     req.body;
-  // console.log('data fetched from api successfully');
-  // email validation
   try {
-    console.log('recieved users data');
+    // console.log('recieved users data');
     validate(firstName, lastName, emailId, password, age, gender, skills);
-    console.log('user enterd correct details');
+    // console.log('user enterd correct details');
+    const passHash = String(await bcrypt.hash(password, 10));
+    // console.log(passHash);
+
     const newUser = user({
       firstName,
       lastName,
       emailId,
-      password,
+      password: passHash,
       age,
       gender,
       skills,
@@ -50,23 +46,29 @@ app.post('/addUser', async (req, res) => {
   // skills
 });
 
-app.get('/allUsers', async (req, res) => {
+// kind of like insta feed
+app.get('/allUsers', authFunc, async (req, res) => {
   const allData = await user.find();
   res.send(allData);
 });
 
-app.patch('/update', async (req, res) => {
-  const idUser = req.body._id;
+// update here and see that user can update profile only after loging into website
+app.patch('/update', authFunc, async (req, res) => {
+  const idUser = req.userData._id;
   // const fileds make it dynamic
-  const upd = await User.findByIdAndUpdate(idUser, { firstName: 'ybmkrishna' });
+  const upd = await user.findByIdAndUpdate(idUser, { firstName: 'ybmkrishna' });
   res.send(' updated successfully to YBMK');
 });
 
-app.delete('/delete', async (req, res) => {
-  const idUser = req.body._id;
-  const del = await User.findByIdAndDelete(idUser);
+/// user and admin rights
+app.delete('/delete', authFunc, async (req, res) => {
+  const idUser = req.userData._id;
+  const del = await user.findByIdAndDelete(idUser);
   res.send('user deleted successfully');
 });
+
+app.get('/login', loginAuth);
+app.get('/profile', profileRouter);
 
 try {
   dataBase.dataBase();
